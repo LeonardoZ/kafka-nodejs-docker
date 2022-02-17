@@ -1,16 +1,43 @@
 version: '3'
 services:
-  zookeeper:
-    image: zookeeper
-    hostname: zookeeper
-    ports:
-      - 2181:2181
-
-  kafka:
-    image: ches/kafka
-    hostname: localhost
-    ports:
-      - 9092:9092
+  cp-zookeeper:
+    container_name: zk-vols
+    network_mode: host
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: <LOCAL IP ADDRESS>
-      ZOOKEEPER_IP: <LOCAL IP ADDRESS>
+        ZOOKEEPER_TICK_TIME: 2000
+        ZOOKEEPER_CLIENT_PORT: 32181
+        JVMFLAGS: "-Xmx512m"
+        KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/zookeeper_server_jaas.conf
+            -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+            -Dzookeeper.allowSaslFailedClients=false
+            -Dzookeeper.requireClientAuthScheme=sasl
+    volumes:
+        - './volumes/zk-data:/var/lib/zookeeper/data'
+        - './volumes/zk-txn-logs:/var/lib/zookeeper/log'
+        - ./configs/zookeeper.jaas.conf:/etc/kafka/zookeeper_server_jaas.conf
+    image: 'confluentinc/cp-zookeeper:7.0.1'
+
+  cp-kafka:
+    container_name: kafka-vols
+    network_mode: host
+    environment:
+        KAFKA_BROKER_ID: 1
+        KAFKA_ZOOKEEPER_CONNECT: localhost:32181
+        #- 'KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092'
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        KAFKA_HEAP_OPTS: -Xmx512M -Xms512M
+        KAFKA_LOG_RETENTION_HOURS: 2160 # 90 Days
+        KAFKA_LOG_RENTENTION_BYTES: 524288000 # 500MB
+        KAFKA_LISTENERS: SASL_PLAINTEXT://:9092
+        KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://localhost:9092
+        ZOOKEEPER_SASL_ENABLED: "false"
+        KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
+        KAFKA_INTER_BROKER_LISTENER_NAME: SASL_PLAINTEXT
+        KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+        KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+    volumes:
+        - './volumes/kafka-data:/var/lib/kafka/data'
+        - ./configs/kafka.jaas.conf:/etc/kafka/kafka_server_jaas.conf
+    image: 'confluentinc/cp-kafka:7.0.1'
+    depends_on:
+      - cp-zookeeper

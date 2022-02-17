@@ -1,2 +1,6 @@
 node_modules
 package-lock.json
+/volumes/kafka-data/*
+/volumes/zk-data/*
+/volumes/zk-txn-logs/*
+config
