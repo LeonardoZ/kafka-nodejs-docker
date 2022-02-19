@@ -66,6 +66,68 @@ services:
       KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SASL_PLAINTEXT
       KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM: PLAIN
       KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: 'org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret";'
+  
+  connect:
+        image: confluentinc/cp-kafka-connect-base:7.0.0
+        hostname: connect
+        container_name: connect
+        networks:
+          - kafka-local
+        ports:
+          - 28083:28083
+        links:
+          - cp-kafka
+          - cp-zookeeper
+        environment:
+          CONNECT_BOOTSTRAP_SERVERS: cp-kafka:9092
+          CONNECT_REST_PORT: 28083
+          CONNECT_GROUP_ID: "quickstart-avro"
+          CONNECT_CONFIG_STORAGE_TOPIC: "quickstart-avro-config"
+          CONNECT_OFFSET_STORAGE_TOPIC: "quickstart-avro-offsets"
+          CONNECT_STATUS_STORAGE_TOPIC: "quickstart-avro-status"
+          CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+          CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+          CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+          CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+          CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+          CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+          CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+          CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+          CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+          CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
+          # Configure the Connect workers to use SASL/PLAIN.
+          CONNECT_SASL_MECHANISM: PLAIN
+          CONNECT_SECURITY_PROTOCOL: SASL_PLAINTEXT
+          # JAAS
+          CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"admin\" \
+              password=\"admin-secret\";"
+          # producer
+          CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_PLAINTEXT
+          CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"admin\" \
+              password=\"admin-secret\";"
+          CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: PLAIN
+          # consumer
+          CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_PLAINTEXT
+          CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"admin\" \
+              password=\"admin-secret\";"
+          CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: PLAIN
+          # producer
+          CONNECT_PRODUCER_SASL_MECHANISM: PLAIN
+          CONNECT_PRODUCER_SECURITY_PROTOCOL: SASL_PLAINTEXT
+          CONNECT_PRODUCER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"admin\" \
+              password=\"admin-secret\";"
+          # consumer
+          CONNECT_CONSUMER_SASL_MECHANISM: PLAIN
+          CONNECT_CONSUMER_SECURITY_PROTOCOL: SASL_PLAINTEXT
+          CONNECT_CONSUMER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"admin\" \
+              password=\"admin-secret\";"
+        volumes:
+          - ./conectors/confluentinc-kafka-connect-jdbc-10.3.3/lib:/etc/kafka-connect/jars
 networks:
   kafka-local:
     
