@@ -1,0 +1,24 @@
+{  
+   "name": "datasul-queue-kafka-v4",    
+   "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+   "connection.url": "jdbc:sqlserver://172.16.15.102:7777;databaseName=integracao_portal_teste",
+   "connection.user": "sa",    
+   "connection.password": "wololo@Mul123",    
+   "mode": "timestamp+incrementing",
+   "incrementing.column.name": "id",
+   "timestamp.column.name": "data_auditoria",
+   "timestamp.initial": "1645585200",
+   "quote.sql.identifiers": "never",
+   "table.whitelist": "portal_cliente_teste",
+   "tasks.max": 1,   
+   "pool.interval.ms": "30000",
+   "topic.prefix": "portal_cliente.dtsul.",
+   "auto.create": "true",
+   "value.converter.schemas.enable": false,
+   "transforms": "defineTopicName,valueToKey",
+   "transforms.defineTopicName.type": "io.confluent.connect.transforms.ExtractTopic$Value",
+   "transforms.defineTopicName.field": "tabela", 
+   "transforms.valueToKey.type":"org.apache.kafka.connect.transforms.ValueToKey",
+   "transforms.valueToKey.fields":"chaves"
+   
+}

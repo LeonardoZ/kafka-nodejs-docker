@@ -74,46 +74,35 @@ services:
         networks:
           - kafka-local
         ports:
-          - 28083:28083
+          - 8083:8083
         links:
           - cp-kafka
           - cp-zookeeper
         environment:
           CONNECT_BOOTSTRAP_SERVERS: cp-kafka:9092
-          CONNECT_REST_PORT: 28083
-          CONNECT_GROUP_ID: "quickstart-avro"
-          CONNECT_CONFIG_STORAGE_TOPIC: "quickstart-avro-config"
-          CONNECT_OFFSET_STORAGE_TOPIC: "quickstart-avro-offsets"
-          CONNECT_STATUS_STORAGE_TOPIC: "quickstart-avro-status"
+          CONNECT_REST_PORT: 8083
+          CONNECT_HEAP_OPTS: -Xmx256M -Xms256M
+          KAFKA_HEAP_OPTS: -Xmx256M -Xms256M -XX:MaxRAMFraction=512M
+          HEAP_OPTS: -Xmx256M -Xms256M
           CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
           CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
           CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
-          CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-          CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-          CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-          CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-          CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
-          CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
-          CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
+          CONNECT_GROUP_ID: "quickstart" 
+          CONNECT_CONFIG_STORAGE_TOPIC: "quickstart-config" 
+          CONNECT_OFFSET_STORAGE_TOPIC: "quickstart-offsets" 
+          CONNECT_STATUS_STORAGE_TOPIC: "quickstart-status" 
+          CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter" 
+          CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter" 
+          CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter" 
+          CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter" 
+          CONNECT_REST_ADVERTISED_HOST_NAME: "localhost" 
           # Configure the Connect workers to use SASL/PLAIN.
           CONNECT_SASL_MECHANISM: PLAIN
           CONNECT_SECURITY_PROTOCOL: SASL_PLAINTEXT
           # JAAS
           CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
               username=\"admin\" \
-              password=\"admin-secret\";"
-          # producer
-          CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_PLAINTEXT
-          CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
-              username=\"admin\" \
-              password=\"admin-secret\";"
-          CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: PLAIN
-          # consumer
-          CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_PLAINTEXT
-          CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
-              username=\"admin\" \
-              password=\"admin-secret\";"
-          CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: PLAIN
+              password=\"admin-secret\";"         
           # producer
           CONNECT_PRODUCER_SASL_MECHANISM: PLAIN
           CONNECT_PRODUCER_SECURITY_PROTOCOL: SASL_PLAINTEXT
